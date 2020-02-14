@@ -1,5 +1,5 @@
 import { NativeEventEmitter, NativeModules, Platform } from "react-native";
-import { NotificationName } from "./NotificationName";
+import { XGPushEventName } from "./XGPushEventName";
 
 const { RNTXingePush } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNTXingePush);
@@ -105,7 +105,7 @@ export default {
    * @param name 通知名
    * @param listener 回调处理函数
    */
-  addEventListener(name: NotificationName, listener: (data: any) => void) {
+  addEventListener(name: XGPushEventName, listener: (data: any) => void) {
     return eventEmitter.addListener(name, listener);
   },
 

@@ -1,4 +1,4 @@
-import { NotificationName } from "./NotificationName";
+import { XGPushEventName } from "./XGPushEventName";
 declare const _default: {
     /**
      * 设置是否开启调试模式，底层 SDK 会打印详细信息
@@ -60,7 +60,7 @@ declare const _default: {
      * @param name 通知名
      * @param listener 回调处理函数
      */
-    addEventListener(name: NotificationName, listener: (data: any) => void): import("react-native").EmitterSubscription;
+    addEventListener(name: XGPushEventName, listener: (data: any) => void): import("react-native").EmitterSubscription;
     /*************************** Android 独有的配置 **********************************/
     /**
      * 设置是否开启第三方推送通道
