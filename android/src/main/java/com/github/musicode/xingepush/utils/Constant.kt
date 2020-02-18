@@ -1,4 +1,4 @@
-package com.github.musicode.xingepush
+package com.github.musicode.xingepush.utils
 
 object Constant {
 

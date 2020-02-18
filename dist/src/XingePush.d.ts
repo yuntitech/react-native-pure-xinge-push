@@ -1,5 +1,9 @@
-import { XGPushEventName } from "./XGPushEventName";
-declare const _default: {
+import { XGPushEventName } from './XGPushEventName';
+export declare class XingeTencentPush {
+    private nativeEventsRegistry;
+    private retryParamsMap;
+    private retryLeftMap;
+    constructor();
     /**
      * 设置是否开启调试模式，底层 SDK 会打印详细信息
      *
@@ -22,7 +26,7 @@ declare const _default: {
      *
      * @param {string} account
      */
-    bindAccount(account: string): void;
+    bindAccount(account: string): any;
     /**
      * 解绑帐号
      *
@@ -88,5 +92,7 @@ declare const _default: {
      * @param {string} appKey
      */
     setMeizu(appId: string, appKey: string): void;
-};
-export default _default;
+    private nativeRetryHandler;
+    private eventEmitAndReset;
+    private resetRetryLeftMap;
+}

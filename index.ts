@@ -1,2 +1,5 @@
-import XingePush from "./src/XingePush";
-export default XingePush;
+import {XingeTencentPush} from "./src/XingePush";
+
+export const XingePush = new XingeTencentPush();
+
+export * from './src/XGPushEventName';
