@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-import com.github.musicode.xingepush.Constant
+import com.github.musicode.xingepush.utils.Constant
 import com.github.musicode.xingepush.RNTXingePushModule
 import com.tencent.android.tpush.XGPushBaseReceiver
 import com.tencent.android.tpush.XGPushClickedResult
@@ -93,13 +93,27 @@ class MessageReceiver : XGPushBaseReceiver() {
 
     }
 
-    override fun onNotifactionClickedResult(context: Context?, result: XGPushClickedResult) {
+    /**
+     * 通知点击回调
+     * actionType=1为该消息被清除
+     * actionType=0为该消息被点击
+     * 此处不能做点击消息跳转
+     * 详细方法请参照官网的Android常见问题文档(https://xg.qq.com/docs/android_access/android_faq.html)
+     *
+     * @param context           app上下文
+     * @param result 推送点击对象
+     */
+    override fun onNotifactionClickedResult(context: Context?, result: XGPushClickedResult?) {
 
-        if (context == null) {
+        if (context == null || result == null) {
             return
         }
 
-        Log.d("XINGE", "[XINGE] onNotifactionClickedResult $result")
+        Log.d("XINGE", "[XINGE] onNotifactionClickedResult ${result.toString()}")
+        //消息点击在onHostResume中处理
+        if (result.actionType == XGPushClickedResult.NOTIFACTION_CLICKED_TYPE.toLong()) {
+            return
+        }
 
         val intent = Intent(Constant.ACTION_NOTIFICATION)
         val title = result.title

@@ -5,27 +5,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-
-import com.facebook.react.bridge.ActivityEventListener
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.WritableMap
+import androidx.collection.ArraySet
+import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.tencent.android.tpush.XGIOperateCallback
-import com.tencent.android.tpush.XGPushBaseReceiver
-import com.tencent.android.tpush.XGPushConfig
-import com.tencent.android.tpush.XGPushManager
-
+import com.github.musicode.xingepush.utils.Constant
+import com.github.musicode.xingepush.utils.toBodyMap
+import com.tencent.android.tpush.*
+import me.leolin.shortcutbadger.ShortcutBadger
 import org.json.JSONException
 import org.json.JSONObject
-
-import androidx.collection.ArraySet
-import me.leolin.shortcutbadger.ShortcutBadger
 
 class RNTXingePushModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, LifecycleEventListener {
 
@@ -98,8 +86,7 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
         if (launchInfo != null) {
             sendEvent("notification", launchInfo!!)
-        }
-        else if (launchIntent != null) {
+        } else if (launchIntent != null) {
             onNotifaction(launchIntent!!)
         }
 
@@ -123,7 +110,7 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     @ReactMethod
     fun bindAccount(account: String) {
-        XGPushManager.appendAccount(reactContext, account, object : XGIOperateCallback {
+        XGPushManager.bindAccount(reactContext, account, object : XGIOperateCallback {
             override fun onSuccess(data: Any?, flag: Int) {
                 onBindAccount(XGPushBaseReceiver.SUCCESS)
             }
@@ -235,37 +222,15 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     }
 
-    private fun onNotifaction(intent: Intent) {
+    private fun onNotifaction(intent: Intent?) {
 
-        val title = intent.getStringExtra("title")
-        val content = intent.getStringExtra("content")
-        val customContent = intent.getStringExtra("customContent")
-        val clicked = intent.getBooleanExtra("clicked", false)
-        val deleted = intent.getBooleanExtra("deleted", false)
-        val presented = intent.getBooleanExtra("presented", false)
-
-        val map = Arguments.createMap()
-        if (clicked) {
-            map.putBoolean("clicked", true)
-        }
-        if (deleted) {
-            map.putBoolean("deleted", true)
-        }
-        if (presented) {
-            map.putBoolean("presented", true)
-        }
-
-        val body = Arguments.createMap()
-        body.putString("title", title)
-        body.putString("content", content)
-        map.putMap("body", body)
-
-        map.putMap("custom_content", getCustomContent(customContent))
-
+        val body = Arguments.fromBundle(intent?.extras)
+        val result = Arguments.createMap()
+        result.putMap("body", body)
         if (isStarted) {
-            sendEvent("notification", map)
+            sendEvent("notification", result)
         } else {
-            launchInfo = map
+            launchInfo = result
         }
 
     }
@@ -295,7 +260,10 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     }
 
     override fun onHostResume() {
-        XGPushManager.onActivityStarted(currentActivity)
+        val click: XGPushClickedResult? = XGPushManager.onActivityStarted(currentActivity)
+        click?.toBodyMap()?.let {
+            sendEvent("notification", it)
+        }
     }
 
     override fun onHostPause() {
