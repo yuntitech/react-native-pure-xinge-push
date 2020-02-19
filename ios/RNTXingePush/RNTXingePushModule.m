@@ -6,6 +6,8 @@ static NSString *XingePushEvent_Start = @"start";
 static NSString *XingePushEvent_Stop = @"stop";
 static NSString *XingePushEvent_Resgiter = @"register";
 
+static NSString *XingePushEvent_BindAccountSuccess = @"bindAccountSuccess";
+static NSString *XingePushEvent_BindAccountFail = @"bindAccountFail";
 static NSString *XingePushEvent_BindAccount = @"bindAccount";
 static NSString *XingePushEvent_BindTags = @"bindTags";
 static NSString *XingePushEvent_UnbindAccount = @"unbindAccount";
@@ -269,6 +271,8 @@ RCT_EXPORT_MODULE(RNTXingePush);
     XingePushEvent_Stop,
     XingePushEvent_Resgiter,
     XingePushEvent_BindAccount,
+    XingePushEvent_BindAccountSuccess,
+    XingePushEvent_BindAccountFail,
     XingePushEvent_BindTags,
     XingePushEvent_UnbindAccount,
     XingePushEvent_UnbindTags,
