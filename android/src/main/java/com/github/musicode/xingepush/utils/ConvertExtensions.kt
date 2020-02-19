@@ -12,6 +12,7 @@ fun XGPushClickedResult.toBodyMap(): WritableMap {
     body.putString("content", content)
     body.putString("customContent", customContent)
     body.putInt("actionType", actionType.toInt())
+    body.putBoolean("clicked",true)
     val result = Arguments.createMap()
     result.putMap("body", body)
     return result
