@@ -12,11 +12,16 @@ export declare class XingeTencentPush {
     setDebug(enable: boolean): void;
     /**
      * 启动信鸽推送服务，如果是通过点击推送打开的 App，调用 start 后会触发 notification 事件
+     * Android仅设置了配置未调用启动与注册代码
      *
      * @param {number} accessId
      * @param {string} accessKey
      */
     start(accessId: number, accessKey: string): void;
+    /**
+     * 启动并注册
+     */
+    registerPush(): void;
     /**
      * 停止信鸽推送服务
      */
@@ -93,6 +98,8 @@ export declare class XingeTencentPush {
      */
     setMeizu(appId: string, appKey: string): void;
     private nativeRetryHandler;
+    private nativeEventCallback;
+    private retryHandler;
     private eventEmitAndReset;
     private resetRetryLeftMap;
 }

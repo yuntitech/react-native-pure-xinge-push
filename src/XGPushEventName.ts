@@ -1,7 +1,8 @@
 export enum XGPushEventName {
     Start = "start",
     Stop = "stop",
-    Register = "register",
+    RegisterSuccess = "registerSuccess",
+    RegisterFail = "registerFail",
     BindAccountSuccess = "bindAccountSuccess",
     BindAccountFail = "bindAccountFail",
     BindTags = "bindTags",

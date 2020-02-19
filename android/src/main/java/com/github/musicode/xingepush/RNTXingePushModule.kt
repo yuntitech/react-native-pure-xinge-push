@@ -71,28 +71,19 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
         XGPushConfig.setAccessId(reactContext, accessId.toLong())
         XGPushConfig.setAccessKey(reactContext, accessKey)
 
+    }
+
+    @ReactMethod
+    fun registerPush() {
         XGPushManager.registerPush(reactContext, object : XGIOperateCallback {
             override fun onSuccess(data: Any?, flag: Int) {
-
-                onStart(XGPushBaseReceiver.SUCCESS)
                 onRegister(XGPushConfig.getToken(reactContext), XGPushBaseReceiver.SUCCESS)
-
             }
 
             override fun onFail(data: Any?, errCode: Int, msg: String) {
-                onStart(errCode)
+                onRegister("", errCode)
             }
         })
-
-        if (launchInfo != null) {
-            sendEvent("notification", launchInfo!!)
-        } else if (launchIntent != null) {
-            onNotifaction(launchIntent!!)
-        }
-
-        launchInfo = null
-        launchIntent = null
-
     }
 
     @ReactMethod

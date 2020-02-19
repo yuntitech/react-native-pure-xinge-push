@@ -7,7 +7,7 @@ const {RNTXingePush} = NativeModules;
 export class XingeTencentPush {
 
     private nativeEventsRegistry: NativeEventsRegistry
-    private retryParamsMap: Map<string, string> = new Map<string, string>()
+    private retryParamsMap: Map<string, any> = new Map<string, any>()
     private retryLeftMap: Map<string, number> = new Map<string, number>()
 
     constructor() {
@@ -26,6 +26,7 @@ export class XingeTencentPush {
 
     /**
      * 启动信鸽推送服务，如果是通过点击推送打开的 App，调用 start 后会触发 notification 事件
+     * Android仅设置了配置未调用启动与注册代码
      *
      * @param {number} accessId
      * @param {string} accessKey
@@ -37,7 +38,17 @@ export class XingeTencentPush {
         if (typeof accessKey !== 'string') {
             console.error(`[XingePush start] accessKey is not a string.`);
         }
+        this.retryParamsMap.set(XGPushEventName.RegisterFail, {accessId, accessKey})
         RNTXingePush.start(accessId, accessKey);
+    }
+
+    /**
+     * 启动并注册
+     */
+    public registerPush() {
+        if (Platform.OS === 'android') {
+            RNTXingePush.registerPush()
+        }
     }
 
     /**
@@ -56,8 +67,7 @@ export class XingeTencentPush {
         if (typeof account !== 'string') {
             console.error(`[XingePush bindAccount] account is not a string.`);
         }
-        console.log('##', 'bindAccount ', account)
-        this.retryParamsMap.set('bindAccount', account)
+        this.retryParamsMap.set(XGPushEventName.BindAccountFail, account)
         return RNTXingePush.bindAccount(account);
     }
 
@@ -183,23 +193,46 @@ export class XingeTencentPush {
 
     private nativeRetryHandler() {
         this.resetRetryLeftMap()
-        this.nativeEventsRegistry.addBindAccountListener((eventType, data) => {
-            const retryLeft: number = this.retryLeftMap.get(eventType) || 5
-            const account = this.retryParamsMap.get(eventType)
-            // 绑定成功
-            if (data.error === 0) {
-                this.eventEmitAndReset(XGPushEventName.BindAccountSuccess, data)
-            }
-            // 重试
-            else if (retryLeft >= 0 && account != null) {
-                this.retryLeftMap.set(eventType, retryLeft - 1)
-                this.bindAccount(account)
-            }
-            // 失败
-            else {
-                this.eventEmitAndReset(XGPushEventName.BindAccountFail, data)
-            }
-        })
+        this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback)
+        this.nativeEventsRegistry.addRegisterListener(this.nativeEventCallback)
+    }
+
+    private nativeEventCallback = (eventType: XGPushEventName, data: any) => {
+        const retryLeft: number = this.retryLeftMap.get(eventType) || 5
+        // 成功
+        if ([XGPushEventName.BindAccountSuccess,
+            XGPushEventName.RegisterSuccess].includes(eventType)) {
+            this.eventEmitAndReset(eventType, data)
+        }
+        // 重试
+        else if (retryLeft >= 0) {
+            this.retryHandler(eventType, retryLeft, data)
+        }
+        // 失败
+        else {
+            this.eventEmitAndReset(eventType, data)
+        }
+    }
+
+    private retryHandler(eventType: string, retryLeft: number, data: any) {
+        this.retryLeftMap.set(eventType, retryLeft - 1)
+        const account = this.retryParamsMap.get(eventType)
+        switch (eventType) {
+            case XGPushEventName.RegisterFail:
+                if (Platform.OS === 'android') {
+                    this.registerPush()
+                } else {
+                    const accessConfig = this.retryParamsMap.get(eventType)
+                    accessConfig != null ? this.start(accessConfig.accessId, accessConfig.accessKey) :
+                        this.eventEmitAndReset(eventType, data)
+                }
+                break
+            case XGPushEventName.BindAccountFail:
+                account != null ? this.bindAccount(account) : this.eventEmitAndReset(eventType, data)
+                break
+            default:
+                break
+        }
     }
 
     private eventEmitAndReset(eventType: string, data: any) {
@@ -208,8 +241,10 @@ export class XingeTencentPush {
     }
 
     private resetRetryLeftMap() {
-        this.retryLeftMap.set('bindAccount', 5)
-        this.retryParamsMap.delete('bindAccount')
+        this.retryLeftMap.set(XGPushEventName.BindAccountFail, 5)
+        this.retryLeftMap.set(XGPushEventName.RegisterFail, 5)
+        this.retryParamsMap.delete(XGPushEventName.BindAccountFail)
+        this.retryParamsMap.delete(XGPushEventName.RegisterFail)
 
     }
 }

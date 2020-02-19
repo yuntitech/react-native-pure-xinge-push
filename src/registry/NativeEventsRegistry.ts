@@ -4,7 +4,7 @@
  * @Last Modified by: kangqiang
  * @Last Modified time: 2020/2/12 6:11 下午
  */
-import {NativeModules, NativeEventEmitter, EventEmitter, EmitterSubscription} from 'react-native'
+import {EmitterSubscription, EventEmitter, NativeEventEmitter, NativeModules} from 'react-native'
 import {XGPushEventName} from "../XGPushEventName";
 
 const {RNTXingePush} = NativeModules;
@@ -26,10 +26,16 @@ export class NativeEventsRegistry {
         }
     }
 
-    public addBindAccountListener(callback: (eventType: string, data: any) => void): EmitterSubscription {
-        const bindAccount = 'bindAccount'
-        return this.emitter.addListener(bindAccount, data => {
-            callback(bindAccount, data)
+    public addBindAccountListener(callback: (eventType: XGPushEventName, data: any) => void)
+        : EmitterSubscription {
+        return this.emitter.addListener('bindAccount', data => {
+            callback(data.error === 0 ? XGPushEventName.BindAccountSuccess : XGPushEventName.BindAccountFail, data)
+        })
+    }
+
+    public addRegisterListener(callback: (eventType: XGPushEventName, data: any) => void): EmitterSubscription {
+        return this.emitter.addListener('register', data => {
+            callback(data.error === 0 ? XGPushEventName.RegisterSuccess : XGPushEventName.RegisterFail, data)
         })
     }
 

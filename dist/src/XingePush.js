@@ -8,6 +8,22 @@ class XingeTencentPush {
     constructor() {
         this.retryParamsMap = new Map();
         this.retryLeftMap = new Map();
+        this.nativeEventCallback = (eventType, data) => {
+            const retryLeft = this.retryLeftMap.get(eventType) || 5;
+            // 成功
+            if ([XGPushEventName_1.XGPushEventName.BindAccountSuccess,
+                XGPushEventName_1.XGPushEventName.RegisterSuccess].includes(eventType)) {
+                this.eventEmitAndReset(eventType, data);
+            }
+            // 重试
+            else if (retryLeft >= 0) {
+                this.retryHandler(eventType, retryLeft, data);
+            }
+            // 失败
+            else {
+                this.eventEmitAndReset(eventType, data);
+            }
+        };
         this.nativeEventsRegistry = new NativeEventsRegistry_1.NativeEventsRegistry();
         this.nativeRetryHandler();
     }
@@ -21,6 +37,7 @@ class XingeTencentPush {
     }
     /**
      * 启动信鸽推送服务，如果是通过点击推送打开的 App，调用 start 后会触发 notification 事件
+     * Android仅设置了配置未调用启动与注册代码
      *
      * @param {number} accessId
      * @param {string} accessKey
@@ -32,7 +49,16 @@ class XingeTencentPush {
         if (typeof accessKey !== 'string') {
             console.error(`[XingePush start] accessKey is not a string.`);
         }
+        this.retryParamsMap.set(XGPushEventName_1.XGPushEventName.RegisterFail, { accessId, accessKey });
         RNTXingePush.start(accessId, accessKey);
+    }
+    /**
+     * 启动并注册
+     */
+    registerPush() {
+        if (react_native_1.Platform.OS === 'android') {
+            RNTXingePush.registerPush();
+        }
     }
     /**
      * 停止信鸽推送服务
@@ -49,8 +75,7 @@ class XingeTencentPush {
         if (typeof account !== 'string') {
             console.error(`[XingePush bindAccount] account is not a string.`);
         }
-        console.log('##', 'bindAccount ', account);
-        this.retryParamsMap.set('bindAccount', account);
+        this.retryParamsMap.set(XGPushEventName_1.XGPushEventName.BindAccountFail, account);
         return RNTXingePush.bindAccount(account);
     }
     /**
@@ -164,31 +189,39 @@ class XingeTencentPush {
     }
     nativeRetryHandler() {
         this.resetRetryLeftMap();
-        this.nativeEventsRegistry.addBindAccountListener((eventType, data) => {
-            const retryLeft = this.retryLeftMap.get(eventType) || 5;
-            const account = this.retryParamsMap.get(eventType);
-            // 绑定成功
-            if (data.error === 0) {
-                this.eventEmitAndReset(XGPushEventName_1.XGPushEventName.BindAccountSuccess, data);
-            }
-            // 重试
-            else if (retryLeft >= 0 && account != null) {
-                this.retryLeftMap.set(eventType, retryLeft - 1);
-                this.bindAccount(account);
-            }
-            // 失败
-            else {
-                this.eventEmitAndReset(XGPushEventName_1.XGPushEventName.BindAccountFail, data);
-            }
-        });
+        this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback);
+        this.nativeEventsRegistry.addRegisterListener(this.nativeEventCallback);
+    }
+    retryHandler(eventType, retryLeft, data) {
+        this.retryLeftMap.set(eventType, retryLeft - 1);
+        const account = this.retryParamsMap.get(eventType);
+        switch (eventType) {
+            case XGPushEventName_1.XGPushEventName.RegisterFail:
+                if (react_native_1.Platform.OS === 'android') {
+                    this.registerPush();
+                }
+                else {
+                    const accessConfig = this.retryParamsMap.get(eventType);
+                    accessConfig != null ? this.start(accessConfig.accessId, accessConfig.accessKey) :
+                        this.eventEmitAndReset(eventType, data);
+                }
+                break;
+            case XGPushEventName_1.XGPushEventName.BindAccountFail:
+                account != null ? this.bindAccount(account) : this.eventEmitAndReset(eventType, data);
+                break;
+            default:
+                break;
+        }
     }
     eventEmitAndReset(eventType, data) {
         react_native_1.DeviceEventEmitter.emit(eventType, data);
         this.resetRetryLeftMap();
     }
     resetRetryLeftMap() {
-        this.retryLeftMap.set('bindAccount', 5);
-        this.retryParamsMap.delete('bindAccount');
+        this.retryLeftMap.set(XGPushEventName_1.XGPushEventName.BindAccountFail, 5);
+        this.retryLeftMap.set(XGPushEventName_1.XGPushEventName.RegisterFail, 5);
+        this.retryParamsMap.delete(XGPushEventName_1.XGPushEventName.BindAccountFail);
+        this.retryParamsMap.delete(XGPushEventName_1.XGPushEventName.RegisterFail);
     }
 }
 exports.XingeTencentPush = XingeTencentPush;
