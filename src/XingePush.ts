@@ -198,7 +198,7 @@ export class XingeTencentPush {
     }
 
     private nativeEventCallback = (eventType: XGPushEventName, data: any) => {
-        const retryLeft: number = this.retryLeftMap.get(eventType) || 5
+        const retryLeft: number = this.retryLeftMap.get(eventType) || -1
         // 成功
         if ([XGPushEventName.BindAccountSuccess,
             XGPushEventName.RegisterSuccess].includes(eventType)) {

@@ -9,7 +9,7 @@ class XingeTencentPush {
         this.retryParamsMap = new Map();
         this.retryLeftMap = new Map();
         this.nativeEventCallback = (eventType, data) => {
-            const retryLeft = this.retryLeftMap.get(eventType) || 5;
+            const retryLeft = this.retryLeftMap.get(eventType) || -1;
             // 成功
             if ([XGPushEventName_1.XGPushEventName.BindAccountSuccess,
                 XGPushEventName_1.XGPushEventName.RegisterSuccess].includes(eventType)) {
