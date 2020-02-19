@@ -273,7 +273,7 @@ RCT_EXPORT_MODULE(RNTXingePush);
     XingePushEvent_Stop,
     XingePushEvent_Resgiter,
     XingePushEvent_ResgiterSuccess,
-    XingePushEvent_ResgiterFail,
+    XingePushEvent_RegisterFail,
     XingePushEvent_BindAccount,
     XingePushEvent_BindAccountSuccess,
     XingePushEvent_BindAccountFail,
