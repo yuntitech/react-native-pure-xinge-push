@@ -7,14 +7,12 @@ import com.tencent.android.tpush.XGPushTextMessage
 
 
 fun XGPushClickedResult.toBodyMap(): WritableMap {
-    val body = Arguments.createMap()
-    body.putString("title", title)
-    body.putString("content", content)
-    body.putString("customContent", customContent)
-    body.putInt("actionType", actionType.toInt())
-    body.putBoolean("clicked",true)
     val result = Arguments.createMap()
-    result.putMap("body", body)
+    result.putString("title", title)
+    result.putString("content", content)
+    result.putString("customContent", customContent)
+    result.putInt("actionType", actionType.toInt())
+    result.putBoolean("clicked", true)
     return result
 }
 

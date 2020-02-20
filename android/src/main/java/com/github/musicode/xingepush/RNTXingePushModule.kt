@@ -215,14 +215,8 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     private fun onNotifaction(intent: Intent?) {
 
-        val body = Arguments.fromBundle(intent?.extras)
-        val result = Arguments.createMap()
-        result.putMap("body", body)
-        if (isStarted) {
-            sendEvent("notification", result)
-        } else {
-            launchInfo = result
-        }
+        val result = Arguments.fromBundle(intent?.extras)
+        sendEvent("notification", result)
 
     }
 
