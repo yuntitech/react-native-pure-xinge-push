@@ -8,7 +8,7 @@
 -keep class com.tencent.bigdata.** {* ;}
 
 # 华为通道
--ignorewarning
+-ignorewarnings
 -keepattributes *Annotation*
 -keepattributes Exceptions
 -keepattributes InnerClasses
