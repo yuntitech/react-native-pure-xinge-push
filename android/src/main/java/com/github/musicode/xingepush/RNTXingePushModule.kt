@@ -215,7 +215,9 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     private fun onNotifaction(intent: Intent?) {
 
+        val customContent = intent?.getStringExtra("customContent")
         val result = Arguments.fromBundle(intent?.extras)
+        result.putMap("customContent", customContent?.fromJson())
         sendEvent("notification", result)
 
     }
