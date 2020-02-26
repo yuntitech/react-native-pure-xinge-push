@@ -9,6 +9,7 @@ import androidx.collection.ArraySet
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.github.musicode.xingepush.utils.Constant
+import com.github.musicode.xingepush.utils.fromJson
 import com.github.musicode.xingepush.utils.toBodyMap
 import com.tencent.android.tpush.*
 import me.leolin.shortcutbadger.ShortcutBadger
