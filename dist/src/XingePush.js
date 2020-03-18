@@ -187,6 +187,19 @@ class XingeTencentPush {
             RNTXingePush.setMeizu(appId, appKey);
         }
     }
+    /**
+     * 推送进程唤起主进程消息处理
+     */
+    handleNotificationIfNeeded() {
+        if (react_native_1.Platform.OS === 'android') {
+            return RNTXingePush.handleNotificationIfNeeded();
+        }
+        else {
+            return Promise.reject({
+                message: 'android only',
+            });
+        }
+    }
     nativeRetryHandler() {
         this.resetRetryLeftMap();
         this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback);

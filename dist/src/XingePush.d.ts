@@ -97,6 +97,10 @@ export declare class XingeTencentPush {
      * @param {string} appKey
      */
     setMeizu(appId: string, appKey: string): void;
+    /**
+     * 推送进程唤起主进程消息处理
+     */
+    handleNotificationIfNeeded(): Promise<any>;
     private nativeRetryHandler;
     private nativeEventCallback;
     private retryHandler;
