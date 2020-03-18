@@ -7,6 +7,15 @@ import com.tencent.android.tpush.XGPushTextMessage
 import org.json.JSONException
 import org.json.JSONObject
 
+fun Intent.createClickedNotifaction(): WritableMap {
+    val uri = data
+    val notification = Arguments.createMap()
+    notification.putBoolean("clicked", true)
+    for (key in listOf("tp", "msg", "pushPlanId", "pushRecordId")) {
+        notification.putString(key, uri?.getQueryParameter(key))
+    }
+    return notification
+}
 
 fun XGPushClickedResult.toBodyMap(): WritableMap {
     val result = Arguments.createMap()

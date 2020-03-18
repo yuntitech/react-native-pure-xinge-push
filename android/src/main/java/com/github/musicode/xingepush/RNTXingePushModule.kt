@@ -248,10 +248,8 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     }
 
     override fun onHostResume() {
-        val click: XGPushClickedResult? = XGPushManager.onActivityStarted(currentActivity)
-        click?.toBodyMap()?.let {
-            sendEvent("notification", it)
-        }
+        XGPushManager.onActivityStarted(currentActivity)
+        currentActivity?.intent?.let { sendEvent("notification", it.createClickedNotifaction()) }
     }
 
     override fun onHostPause() {
