@@ -27,11 +27,13 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     private var badge = 0
 
     private var launchInfo: WritableMap? = null
+    private var firstStarted = false
 
     init {
         reactContext.addActivityEventListener(this)
         reactContext.addLifecycleEventListener(this)
         registerReceivers()
+        firstStarted = true
     }
 
     override fun getName(): String {
@@ -158,6 +160,16 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
         promise.resolve(map)
     }
 
+    @ReactMethod
+    fun handleNotificationIfNeeded(promise: Promise) {
+        if (launchInfo != null) {
+            promise.resolve(launchInfo)
+            launchInfo = null
+        } else {
+            promise.reject(Exception("launchInfo is null"))
+        }
+    }
+
     private fun sendEvent(eventName: String, params: WritableMap) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -250,7 +262,14 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     override fun onHostResume() {
         XGPushManager.onActivityStarted(currentActivity)
-        currentActivity?.intent?.createClickedNotifiction()?.let { sendEvent("notification", it) }
+        currentActivity?.intent?.createClickedNotifiction()?.let {
+            if (firstStarted) {
+                firstStarted = false
+                launchInfo = it
+            } else {
+                sendEvent("notification", it)
+            }
+        }
     }
 
     override fun onHostPause() {
@@ -296,3 +315,4 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     }
 
 }
+q

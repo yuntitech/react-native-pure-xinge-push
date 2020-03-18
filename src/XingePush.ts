@@ -191,6 +191,19 @@ export class XingeTencentPush {
         }
     }
 
+    /**
+     * 推送进程唤起主进程消息处理
+     */
+    public handleNotificationIfNeeded(): Promise<any> {
+        if (Platform.OS === 'android') {
+            return RNTXingePush.handleNotificationIfNeeded();
+        } else {
+            return Promise.reject({
+                message: 'android only',
+            })
+        }
+    }
+
     private nativeRetryHandler() {
         this.resetRetryLeftMap()
         this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback)
