@@ -9,6 +9,7 @@ import androidx.collection.ArraySet
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.github.musicode.xingepush.utils.Constant
+import com.github.musicode.xingepush.utils.createClickedNotifiction
 import com.github.musicode.xingepush.utils.fromJson
 import com.github.musicode.xingepush.utils.toBodyMap
 import com.tencent.android.tpush.*
@@ -249,7 +250,7 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
 
     override fun onHostResume() {
         XGPushManager.onActivityStarted(currentActivity)
-        currentActivity?.intent?.let { sendEvent("notification", it.createClickedNotifaction()) }
+        currentActivity?.intent?.createClickedNotifiction()?.let { sendEvent("notification", it) }
     }
 
     override fun onHostPause() {
