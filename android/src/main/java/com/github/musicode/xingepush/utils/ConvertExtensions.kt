@@ -1,5 +1,6 @@
 package com.github.musicode.xingepush.utils
 
+import android.content.Intent
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.tencent.android.tpush.XGPushClickedResult
