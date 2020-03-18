@@ -315,4 +315,3 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     }
 
 }
-q
