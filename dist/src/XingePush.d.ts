@@ -101,6 +101,10 @@ export declare class XingeTencentPush {
      * 推送进程唤起主进程消息处理
      */
     handleNotificationIfNeeded(): Promise<any>;
+    /**
+     *  ReactInstanceManager onReactContextInitialized原生不好处理
+     */
+    appLaunched(): void;
     private nativeRetryHandler;
     private nativeEventCallback;
     private retryHandler;

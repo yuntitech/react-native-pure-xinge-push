@@ -204,6 +204,17 @@ export class XingeTencentPush {
         }
     }
 
+    /**
+     *  ReactInstanceManager onReactContextInitialized原生不好处理
+     */
+    public appLaunched(){
+        if (Platform.OS === 'android') {
+            RNTXingePush.appLaunched()
+        }
+    }
+
+
+
     private nativeRetryHandler() {
         this.resetRetryLeftMap()
         this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback)

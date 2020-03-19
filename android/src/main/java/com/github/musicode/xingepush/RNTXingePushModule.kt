@@ -27,13 +27,12 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     private var badge = 0
 
     private var launchInfo: WritableMap? = null
-    private var firstStarted = false
+    private var isAppLaunched = false
 
     init {
         reactContext.addActivityEventListener(this)
         reactContext.addLifecycleEventListener(this)
         registerReceivers()
-        firstStarted = true
     }
 
     override fun getName(): String {
@@ -170,6 +169,12 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
         }
     }
 
+    @ReactMethod
+    fun appLaunched() {
+        //ReactInstanceManager不好传进来, js那边来赋值
+        isAppLaunched = true
+    }
+
     private fun sendEvent(eventName: String, params: WritableMap) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -263,11 +268,10 @@ class RNTXingePushModule(private val reactContext: ReactApplicationContext) : Re
     override fun onHostResume() {
         XGPushManager.onActivityStarted(currentActivity)
         currentActivity?.intent?.createClickedNotifiction()?.let {
-            if (firstStarted) {
-                firstStarted = false
-                launchInfo = it
-            } else {
+            if (isAppLaunched) {
                 sendEvent("notification", it)
+            } else {
+                launchInfo = it
             }
         }
     }

@@ -200,6 +200,14 @@ class XingeTencentPush {
             });
         }
     }
+    /**
+     *  ReactInstanceManager onReactContextInitialized原生不好处理
+     */
+    appLaunched() {
+        if (react_native_1.Platform.OS === 'android') {
+            RNTXingePush.appLaunched();
+        }
+    }
     nativeRetryHandler() {
         this.resetRetryLeftMap();
         this.nativeEventsRegistry.addBindAccountListener(this.nativeEventCallback);
