@@ -102,7 +102,7 @@ export declare class XingeTencentPush {
      */
     handleNotificationIfNeeded(): Promise<any>;
     /**
-     *  ReactInstanceManager onReactContextInitialized原生不好处理
+     *  RNTXingePushModule不好获取ReactInstanceManager引用, js那边来赋值, 用于推送进程唤起主进程
      */
     appLaunched(): void;
     private nativeRetryHandler;

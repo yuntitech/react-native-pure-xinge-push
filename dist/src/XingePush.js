@@ -201,7 +201,7 @@ class XingeTencentPush {
         }
     }
     /**
-     *  ReactInstanceManager onReactContextInitialized原生不好处理
+     *  RNTXingePushModule不好获取ReactInstanceManager引用, js那边来赋值, 用于推送进程唤起主进程
      */
     appLaunched() {
         if (react_native_1.Platform.OS === 'android') {
