@@ -51,7 +51,7 @@ dependencies {
 
     implementation 'com.tencent.xinge:mipush:4.3.2-xiaomi-release'
 //     implementation 'com.tencent.xinge:xgmz:4.3.2-meizu-release'
-//     implementation 'com.tencent.xinge:xghw:4.3.2-huawei-release'
+    implementation 'com.tencent.xinge:xghw:4.3.2-huawei-release'
 
 }
 
